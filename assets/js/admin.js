@@ -3,6 +3,7 @@
 
   var site = clone(window.SITE || {});
   var products = clone(window.PRODUCTS || []);
+  var series = clone(window.SERIES || []);
   var catalogs = clone(window.CATALOGS || []);
   var pending = {};
   var bulkPaths = [];
@@ -52,9 +53,18 @@
   function inputField(idx, key, val, opt) {
     opt = opt || {};
     var common = 'data-pindex="' + idx + '" data-field="' + key + '"';
-    var control = opt.area
-      ? "<textarea " + common + ">" + esc(val) + "</textarea>"
-      : '<input type="text" ' + common + ' value="' + esc(val) + '">';
+    var control;
+    if (opt.options) {
+      var opts = opt.options.slice();
+      if (val && opts.indexOf(String(val)) === -1) opts.unshift(String(val));
+      control = '<select ' + common + '>' + opts.map(function (o) {
+        return '<option value="' + esc(o) + '"' + (String(o) === String(val) ? " selected" : "") + ">" + esc(o) + "</option>";
+      }).join("") + "</select>";
+    } else if (opt.area) {
+      control = "<textarea " + common + ">" + esc(val) + "</textarea>";
+    } else {
+      control = '<input type="text" ' + common + ' value="' + esc(val) + '">';
+    }
     return '<div class="field' + (opt.full ? " full" : "") + '"><label>' + esc(opt.label || label(key)) + "</label>" + control + "</div>";
   }
 
@@ -72,11 +82,16 @@
   });
 
   /* ---------- products ---------- */
+  var TYPE_OPTIONS = [
+    "Basin Mixer", "Kitchen Faucet", "Shower Mixer", "Bathtub Mixer",
+    "Concealed Shower Mixer", "Shower Column Set", "Other"
+  ];
   var PRODUCT_FIELDS = [
     { k: "model", label: "Model" },
     { k: "name", label: "Product name" },
-    { k: "category", label: "Category (used by the filter)" },
-    { k: "series", label: "Series" },
+    { k: "series", label: "Series (must match a name on the Series tab)" },
+    { k: "type", label: "Faucet type (used by the filter)", options: TYPE_OPTIONS },
+    { k: "category", label: "Category (optional sub-label)" },
     { k: "material", label: "Material" },
     { k: "description", label: "Description", area: true, full: true },
     { k: "finishes", label: "Surface finishes (one per line)", area: true, full: true, special: "finishes" },
@@ -91,6 +106,15 @@
     "</div>";
   }
 
+  function detailRow(idx, slot, current) {
+    return '<div class="file-item" data-detail-slot="' + slot + '">' +
+      '<span class="grow"><strong>Detail ' + (slot + 1) + '</strong><br><span class="muted">' + esc(current || "empty (optional)") + "</span></span>" +
+      '<img class="thumb" src="' + esc(current || "") + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+      '<input type="file" accept="image/*,.svg,.webp" data-pindex="' + idx + '" data-detail="' + slot + '">' +
+      (current ? '<button class="btn btn-ghost btn-sm" type="button" data-del-detail="' + idx + '" data-del-src="' + esc(current) + '">Remove</button>' : "") +
+    "</div>";
+  }
+
   function renderProducts() {
     $("#products-editor").innerHTML = products.map(function (p, i) {
       var fields = PRODUCT_FIELDS.map(function (f) {
@@ -100,6 +124,8 @@
         return inputField(i, f.k, v, f);
       }).join("");
       var images = (p.finishes || []).map(function (f) { return imageRow(i, f, p.images && p.images[f]); }).join("");
+      var details = (p.details || []).filter(Boolean).slice(0, 3);
+      var detailRows = [0, 1, 2].map(function (s) { return detailRow(i, s, details[s]); }).join("");
       return '<div class="admin-row" data-row="' + i + '">' +
         '<div class="admin-row-head">' +
           '<strong>' + esc(p.model || "New product") + " — " + esc(p.name || "") + "</strong>" +
@@ -110,6 +136,7 @@
         "</div>" +
         '<div class="admin-fields">' + fields + "</div>" +
         '<div class="sub-card"><h4>Images by finish — select a file to replace the picture</h4>' + images + "</div>" +
+        '<div class="sub-card"><h4>Detail images — up to 3 close-up views shown under the main photo</h4>' + detailRows + "</div>" +
       "</div>";
     }).join("");
   }
@@ -128,16 +155,37 @@
     if (t.type === "file") {
       var file = t.files && t.files[0];
       if (!file) return;
-      var p = products[+i], f = t.getAttribute("data-finish");
-      var path = "assets/img/" + slug(p.model) + "-" + slug(f) + "." + ext(file.name);
-      pending[path] = file;
-      p.images = p.images || {};
-      p.images[f] = path;
+      var p = products[+i], f = t.getAttribute("data-finish"), slot = t.getAttribute("data-detail");
+      var isDetail = slot !== null;
+      var path = isDetail
+        ? "assets/img/details/" + slug(p.model) + "-detail-" + (+slot + 1) + "." + ext(file.name)
+        : "assets/img/" + slug(p.model) + "-" + slug(f) + "." + ext(file.name);
+      if (isDetail) {
+        var old = (p.details || [])[+slot];
+        if (old && old !== path) delete pending[old];
+        var ds = (p.details || []).filter(Boolean).slice(0, 3);
+        while (ds.length < 3) ds.push("");
+        ds[+slot] = path;
+        p.details = ds.filter(Boolean).slice(0, 3);
+      } else {
+        pending[path] = file;
+        p.images = p.images || {};
+        p.images[f] = path;
+      }
+      if (isDetail) pending[path] = file;
       var row = t.closest(".file-item");
       var thumb = row.querySelector("img");
       thumb.src = URL.createObjectURL(file);
       thumb.style.visibility = "visible";
       row.querySelector(".muted").textContent = path + " · " + fmt(file.size) + " · ready to export";
+      if (isDetail && !row.querySelector("[data-del-detail]")) {
+        var rm = document.createElement("button");
+        rm.type = "button"; rm.className = "btn btn-ghost btn-sm";
+        rm.setAttribute("data-del-detail", i);
+        rm.setAttribute("data-del-src", path);
+        rm.textContent = "Remove";
+        row.appendChild(rm);
+      }
       toast("Image staged: " + path);
       return;
     }
@@ -152,6 +200,18 @@
     products[+i][k] = t.value;
   });
   pEditor.addEventListener("click", function (e) {
+    var di = e.target.getAttribute && e.target.getAttribute("data-del-detail");
+    if (di !== null && di !== undefined) {
+      var src = e.target.getAttribute("data-del-src");
+      var p = products[+di];
+      if (p) {
+        p.details = (p.details || []).filter(function (x) { return x !== src; }).slice(0, 3);
+        if (src) delete pending[src];
+        renderProducts();
+        toast("Detail image removed (max 3 per product)");
+      }
+      return;
+    }
     var d = e.target.getAttribute && e.target.getAttribute("data-del-product");
     if (d === null || d === undefined) return;
     if (!window.confirm("Delete this product from the exported data?")) return;
@@ -161,11 +221,84 @@
   $("#add-product").addEventListener("click", function () {
     products.push({
       id: "product-" + Date.now(), model: "NEW-001", name: "New product",
-      category: "Hooks", series: products.length ? products[0].series : "", material: "",
-      description: "", finishes: ["Chrome"], images: {}, specs: {}, featured: false
+      category: "Basin Mixer", type: "Basin Mixer",
+      series: products.length ? products[0].series : (series[0] ? series[0].name : ""),
+      material: "SS304 stainless steel",
+      description: "", finishes: ["Chrome"], images: {}, details: [], specs: {}, featured: false
     });
     renderProducts();
     toast("Product added. Remember to assign images.");
+  });
+
+  /* ---------- series ---------- */
+  var SERIES_FIELDS = [
+    { k: "name", label: "Series name (must match the product Series field)" },
+    { k: "description", label: "Series description", area: true, full: true },
+    { k: "cataloguePage", label: "Catalogue page number (0 = no link)" }
+  ];
+  function renderSeries() {
+    $("#series-editor").innerHTML = series.map(function (s, i) {
+      var fields = SERIES_FIELDS.map(function (f) {
+        return inputField(i, f.k, s[f.k] == null ? "" : s[f.k], f);
+      }).join("");
+      var used = products.filter(function (p) { return p.series === s.name; }).length;
+      return '<div class="admin-row" data-srow="' + i + '">' +
+        '<div class="admin-row-head"><strong>' + esc(s.name || "New series") +
+          ' <span class="muted" style="font-weight:400;font-size:12px">(' + used + " products)</span></strong>" +
+          '<button class="btn btn-ghost btn-sm" type="button" data-del-series="' + i + '">Delete</button></div>' +
+        '<div class="admin-fields">' + fields + "</div>" +
+        '<div class="file-item"><span class="grow"><strong>Series cover (optional)</strong><br><span class="muted">' +
+          esc(s.cover || "falls back to the first product photo") + "</span></span>" +
+          '<img class="thumb" src="' + esc(s.cover || "") + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+          '<input type="file" accept="image/*,.svg,.webp" data-sindex="' + i + '"></div>' +
+        "</div>";
+    }).join("");
+  }
+  var sEditor = $("#series-editor");
+  sEditor.addEventListener("input", function (e) {
+    var t = e.target, i = t.getAttribute("data-pindex"), k = t.getAttribute("data-field");
+    if (i === null || !k) return;
+    series[+i][k] = k === "cataloguePage" ? (parseInt(t.value, 10) || 0) : t.value;
+    if (k === "name") {
+      var head = t.closest(".admin-row").querySelector(".admin-row-head strong");
+      if (head) head.textContent = t.value + " (" + products.filter(function (p) { return p.series === t.value; }).length + " products)";
+    }
+  });
+  sEditor.addEventListener("change", function (e) {
+    var t = e.target;
+    if (t.type === "file") {
+      var file = t.files && t.files[0];
+      if (!file) return;
+      var i = +t.getAttribute("data-sindex");
+      var path = "assets/img/series/" + slug(series[i].name || series[i].id || ("series-" + i)) + "." + ext(file.name);
+      pending[path] = file;
+      series[i].cover = path;
+      var row = t.closest(".file-item");
+      var thumb = row.querySelector("img");
+      thumb.src = URL.createObjectURL(file);
+      thumb.style.visibility = "visible";
+      row.querySelector(".muted").textContent = path + " · " + fmt(file.size) + " · ready to export";
+      toast("Series cover staged: " + path);
+      return;
+    }
+    var si = t.getAttribute("data-pindex"), sk = t.getAttribute("data-field");
+    if (si === null || !sk) return;
+    series[+si][sk] = sk === "cataloguePage" ? (parseInt(t.value, 10) || 0) : t.value;
+  });
+  sEditor.addEventListener("click", function (e) {
+    var d = e.target.getAttribute && e.target.getAttribute("data-del-series");
+    if (d === null || d === undefined) return;
+    if (!window.confirm("Delete this series entry? Products are kept and will be grouped under their Series name.")) return;
+    series.splice(+d, 1);
+    renderSeries();
+  });
+  $("#add-series").addEventListener("click", function () {
+    series.push({
+      id: "series-" + Date.now(), name: "New series", description: "", cover: "",
+      cataloguePage: 0, catalogueFile: catalogs[0] ? catalogs[0].file : ""
+    });
+    renderSeries();
+    toast("Series added. Use the same name in each product's Series field.");
   });
 
   /* ---------- catalogs ---------- */
@@ -313,11 +446,11 @@
     var paths = Object.keys(pending);
     var total = paths.reduce(function (n, p) { return n + (pending[p].size || 0); }, 0);
     $("#export-summary").innerHTML =
-      '<div class="admin-note"><strong>Ready to export:</strong> 3 data files, ' + products.length + " products, " + catalogs.length +
+      '<div class="admin-note"><strong>Ready to export:</strong> 4 data files, ' + series.length + " series, " + products.length + " products, " + catalogs.length +
       " catalog entries, " + paths.length + " staged asset files (" + fmt(total) + ")." +
       (paths.length === 0 ? " No new images or PDFs selected — only the data files will be included." : "") + "</div>" +
       '<ul class="list-plain">' +
-        "<li>data/site.js · data/products.js · data/catalogs.js</li>" +
+        "<li>data/site.js · data/series.js · data/products.js · data/catalogs.js</li>" +
         paths.slice(0, 12).map(function (p) { return "<li>" + esc(p) + " · " + fmt(pending[p].size) + "</li>"; }).join("") +
         (paths.length > 12 ? "<li>… and " + (paths.length - 12) + " more</li>" : "") +
       "</ul>";
@@ -339,10 +472,19 @@
       "4. Commit changes. Cloudflare Pages rebuilds and publishes in about a minute.\r\n\r\n" +
       "FILES\r\n" +
       "data/site.js       company name, email, phone, WhatsApp number, marketing copy\r\n" +
-      "data/products.js   product list, finishes, image paths, specifications\r\n" +
+      "data/series.js     series list: one series = one catalogue page, many faucet types\r\n" +
+      "data/products.js   product list, series, type, finishes, image paths, up to 3 detail views\r\n" +
       "data/catalogs.js   PDF catalog entries\r\n" +
       "assets/img/        product images and catalog covers\r\n" +
+      "assets/img/series/ optional series cover images\r\n" +
+      "assets/img/details/  up to 3 close-up detail images per product\r\n" +
       "assets/catalogs/   PDF catalogs\r\n\r\n" +
+      "BULK IMPORT (send folders to your assistant)\r\n" +
+      "One folder per series, named after the series, e.g. inbox/VIENNA/.\r\n" +
+      "Inside: MODEL_FINISH.jpg (SS504002_Chrome.jpg) or TYPE_FINISH.jpg\r\n" +
+      "(Kitchen Faucet_Chrome.jpg / 厨房龙头_拉丝.jpg).\r\n" +
+      "Detail views: SS504002_detail1.jpg ... detail3.jpg (up to 3 per model).\r\n" +
+      "Optional series.json sets the description and catalogue page number.\r\n\r\n" +
       "Existing files with the same name are replaced. Files you did not change are not included.\r\n" +
       "Keep each PDF under 25 MB.\r\n";
   }
@@ -350,6 +492,7 @@
     if (typeof JSZip === "undefined") { toast("ZIP library failed to load"); return null; }
     var zip = new JSZip();
     zip.file("data/site.js", wrap("SITE", site, "Company info — edit in admin.html or replace with an exported file."));
+    zip.file("data/series.js", wrap("SERIES", series, "Series grouping — one series can hold many faucet types."));
     zip.file("data/products.js", wrap("PRODUCTS", products, "Product data — edit in admin.html or replace with an exported file."));
     zip.file("data/catalogs.js", wrap("CATALOGS", catalogs, "Catalog entries — edit in admin.html or replace with an exported file."));
     if (includeAssets) {
@@ -377,6 +520,7 @@
   });
 
   renderProducts();
+  renderSeries();
   renderCatalogs();
   renderSite();
   renderBulk();
