@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site manager | YIDE SANITARYWARE</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="admin">
+<header class="site-header">
+  <div class="container nav-inner">
+    <a class="logo" href="index.html"><span class="logo-mark"></span><span data-brand>YIDE SANITARYWARE</span></a>
+    <button class="nav-toggle" type="button" aria-label="Menu">Menu</button>
+    <nav class="nav-links">
+      <a href="index.html" data-nav="home">Home</a>
+      <a href="products.html" data-nav="products">Products</a>
+      <a href="catalogs.html" data-nav="catalogs">Catalogs</a>
+      <a href="about.html" data-nav="about">About</a>
+      <a href="contact.html" data-nav="contact">Contact</a>
+    </nav>
+    <a class="btn btn-ghost btn-sm header-cta" href="index.html">View website</a>
+  </div>
+</header>
+
+<div class="admin-shell">
+  <aside class="admin-side">
+    <h3>Site manager</h3>
+    <button class="admin-tab active" type="button" data-tab="products">Products</button>
+    <button class="admin-tab" type="button" data-tab="catalogs">Catalogs &amp; files</button>
+    <button class="admin-tab" type="button" data-tab="site">Company info</button>
+    <button class="admin-tab" type="button" data-tab="export">Export update</button>
+    <button class="admin-tab" type="button" data-tab="guide">Deployment guide</button>
+  </aside>
+
+  <main class="admin-main">
+
+    <section class="admin-panel active" id="panel-products">
+      <h2>Products</h2>
+      <p class="panel-lead">Edit product details and assign an image for each surface finish. Select a file from your computer to preview it; the file is included when you export the update package.</p>
+      <div class="admin-note"><strong>How this works:</strong> this page runs entirely in your browser and does not connect to a server. Your edits stay here until you export and upload the update package. Nothing is published by accident.</div>
+      <div id="products-editor"></div>
+      <div class="admin-actions"><button class="btn btn-ghost" type="button" id="add-product">+ Add a product</button></div>
+    </section>
+
+    <section class="admin-panel" id="panel-catalogs">
+      <h2>Catalogs &amp; files</h2>
+      <p class="panel-lead">Register your PDF catalogs here, or drop any product images and PDFs into the bulk area below to add them to the update package without editing a single line of data.</p>
+      <div class="admin-note">Keep individual PDFs under <strong>25 MB</strong> (the Cloudflare Pages per-file limit). Compress images to WebP before uploading so the site stays fast on mobile networks.</div>
+      <div id="catalogs-editor"></div>
+      <div class="admin-actions"><button class="btn btn-ghost" type="button" id="add-catalog">+ Add a catalog entry</button></div>
+
+      <h3 class="admin-h4">Bulk upload files</h3>
+      <div class="dropzone" id="bulk-drop">
+        <strong>Drop product images and PDF catalogs here</strong>
+        <span>or click to choose files. Images go to assets/img/, PDFs go to assets/catalogs/.</span>
+        <input type="file" id="bulk-input" class="hidden" multiple accept="image/*,.pdf,.webp,.svg">
+      </div>
+      <div class="preview-grid" id="bulk-list"></div>
+    </section>
+
+    <section class="admin-panel" id="panel-site">
+      <h2>Company info</h2>
+      <p class="panel-lead">Company details, products and catalogue files are managed here. Export an update package whenever you change something.</p>
+      <div class="admin-note">The <strong>email</strong> field is used by every "Inquire" button and the contact form. Set it to a real mailbox on your own domain.</div>
+      <div id="site-editor"></div>
+    </section>
+
+    <section class="admin-panel" id="panel-export">
+      <h2>Export update</h2>
+      <p class="panel-lead">Download a single ZIP containing the updated data files plus every image and PDF you selected. Upload it to your GitHub repository and the website refreshes automatically in about a minute.</p>
+      <div class="admin-note"><strong>Do not skip this step.</strong> Edits made on this page are local to this browser tab. Closing the tab without exporting loses them.</div>
+      <div id="export-summary"></div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" type="button" id="btn-export-zip">Download site-update.zip</button>
+        <button class="btn btn-ghost" type="button" id="btn-export-data">Download data files only</button>
+      </div>
+      <h3 class="admin-h4">After downloading</h3>
+      <ol class="list-plain" id="export-steps"></ol>
+    </section>
+
+    <section class="admin-panel" id="panel-guide">
+      <h2>Deployment guide</h2>
+      <p class="panel-lead">Set up for overseas customers: no ICP filing, no server, no monthly hosting fee. Only the domain costs money.</p>
+      <div class="admin-note"><strong>Status (checked 2026-11-15):</strong> grifowheatstraw.com is registered and already uses Cloudflare nameservers (<span class="code">noah.ns.cloudflare.com</span> / <span class="code">ryleigh.ns.cloudflare.com</span>). No A, CNAME, MX or www records exist yet. Product photos are still placeholders. Finish steps 2&ndash;5 below to go live on your own domain.</div>
+
+      <div class="guide-step">
+        <div class="guide-num">1</div>
+        <div><h4>Domain registered and hosted on Cloudflare &mdash; done</h4>
+          <p><span class="code">grifowheatstraw.com</span> is registered and delegated to Cloudflare, so no nameserver change is needed. Keep auto-renew and registrar lock enabled, and watch the <strong>renewal price</strong> rather than any first-year promotion. Keep the registrant in your company name.</p></div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">2</div>
+        <div><h4>Create a free GitHub repository</h4>
+          <p>Upload this entire <span class="code">independent-site</span> folder as a new repository (private is fine). GitHub's web uploader accepts dragged folders, so no command line or Git install is needed.</p></div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">3</div>
+        <div><h4>Connect Cloudflare Pages</h4>
+          <p>In the Cloudflare dashboard: Workers &amp; Pages → Create → Pages → Connect to Git → pick the repository. Build settings: framework <span class="code">None</span>, build command <span class="code">(leave empty)</span>, output directory <span class="code">/</span>. Deploy. You get a free <span class="code">*.pages.dev</span> address, unlimited bandwidth and automatic HTTPS.</p></div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">4</div>
+        <div><h4>Bind grifowheatstraw.com to Pages</h4>
+          <p>In Pages → Custom domains, add <span class="code">grifowheatstraw.com</span> and <span class="code">www.grifowheatstraw.com</span>. The zone is already on Cloudflare, so Pages creates the CNAME records and issues the SSL certificate automatically &mdash; do not add A records by hand. Hosted outside mainland China with no mainland customers, so <strong>no ICP filing is required</strong>.</p></div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">5</div>
+        <div><h4>Set up a free business email address</h4>
+          <p>Cloudflare → Email → Email Routing: create <span class="code">info@grifowheatstraw.com</span> and forward it to <span class="code">Jackbathroom@aliyun.com</span> (the mailbox printed in the 2026 catalogue), free. <strong>Only after forwarding is verified</strong>, change the email in Company info or <span class="code">inbox/company.json</span> &mdash; otherwise inquiries would go nowhere.</p></div>
+      </div>
+      <div class="guide-step">
+        <div class="guide-num">6</div>
+        <div><h4>Routine updates</h4>
+          <p>Send new product images and PDF catalogs to your assistant: files go into <span class="code">inbox/</span>, the import script rebuilds <span class="code">data/</span> and <span class="code">assets/</span>, and the site is republished. You can also use this Site manager → Export update → unzip → drag the folders into the repository root on github.com → Commit. Pages rebuilds automatically. No server, no deploy command, no fee.</p></div>
+      </div>
+
+      <h3 class="admin-h4">Annual cost</h3>
+      <table class="cost-table">
+        <thead><tr><th>Item</th><th>Provider</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td>.com domain &mdash; grifowheatstraw.com</td><td>Already purchased</td><td>Paid (renewal only, approx. CNY 65&ndash;90 / year)</td></tr>
+          <tr><td>Website hosting + bandwidth</td><td>Cloudflare Pages</td><td>CNY 0 (permanent free tier)</td></tr>
+          <tr><td>Images + PDF catalogs</td><td>Same Pages deployment</td><td>CNY 0</td></tr>
+          <tr><td>CDN, SSL, DDoS protection</td><td>Cloudflare free plan</td><td>CNY 0</td></tr>
+          <tr><td>Business email forwarding</td><td>Cloudflare Email Routing</td><td>CNY 0</td></tr>
+          <tr><td>Contact form / inquiry</td><td>Opens the visitor's email app</td><td>CNY 0</td></tr>
+          <tr><td>ICP filing</td><td>Not needed for overseas audience</td><td>CNY 0</td></tr>
+          <tr><td>Total per year</td><td>Only the domain renewal</td><td>approx. CNY 65&ndash;90</td></tr>
+        </tbody>
+      </table>
+      <p class="muted" style="font-size:12.5px">Prices are indicative and change with promotions and exchange rates. Confirm on the registrar's site before purchase.</p>
+
+      <h3 class="admin-h4">Limits to keep in mind</h3>
+      <ul class="list-plain">
+        <li>Cloudflare Pages: 20,000 files per site, 25 MB per file, 500 builds per month. Far more than a product-showcase site needs.</li>
+        <li>No server-side code, no database, no shopping cart. Inquiries arrive by email or WhatsApp, which is normal for B2B hardware.</li>
+        <li>This manager edits files locally in the browser. It is not a hosted CMS and cannot push changes by itself.</li>
+        <li>Do not put prices, cost sheets or customer lists in a public repository. Keep the repository private if the files are sensitive.</li>
+      </ul>
+
+      <h3 class="admin-h4">When to upgrade</h3>
+      <div class="admin-note">
+        Move to <strong>Cloudflare R2 + Workers</strong> only when a single catalog exceeds 25 MB, total assets exceed a few GB, or you need a real browser-based upload that publishes instantly without touching GitHub. R2 has a permanent free tier of 10 GB with zero egress fees, but it requires a small Worker for authenticated uploads and a site refactor. Until then, the Pages + GitHub setup is both cheaper in effort and free in cash.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="data/site.js"></script>
+<script src="data/products.js"></script>
+<script src="data/catalogs.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/vendor/jszip.min.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
