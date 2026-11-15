@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<defs>
+<linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#eceeea"/><stop offset=".28" stop-color="#b1b5ae"/><stop offset=".52" stop-color="#d6d9d3"/><stop offset=".78" stop-color="#767b75"/><stop offset="1" stop-color="#b1b5ae"/>
+</linearGradient>
+<linearGradient id="metalV" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#767b75"/><stop offset=".24" stop-color="#b1b5ae"/><stop offset=".5" stop-color="#eceeea"/><stop offset=".74" stop-color="#b1b5ae"/><stop offset="1" stop-color="#767b75"/>
+</linearGradient></defs>
+<rect width="400" height="400" fill="#ffffff"/>
+<ellipse cx="200" cy="338" rx="88" ry="11" fill="#000000" opacity=".05"/>
+<circle cx="200" cy="166" r="47" fill="url(#metal)" stroke="#767b75" stroke-width="1"/>
+<circle cx="200" cy="166" r="37" fill="none" stroke="#ffffff" stroke-opacity=".3" stroke-width="2"/>
+<path d="M200 206 L200 266 Q200 294 228 294 L246 294 Q264 294 264 276 L264 266" fill="none" stroke="url(#metalV)" stroke-width="21" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="264" cy="262" r="12" fill="url(#metal)" stroke="#767b75" stroke-width="1"/>
+</svg>
