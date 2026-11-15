@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+<defs>
+<linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#f7e6bd"/><stop offset=".28" stop-color="#c9a45f"/><stop offset=".52" stop-color="#e6cd96"/><stop offset=".78" stop-color="#87692f"/><stop offset="1" stop-color="#c9a45f"/>
+</linearGradient>
+<linearGradient id="metalV" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#87692f"/><stop offset=".24" stop-color="#c9a45f"/><stop offset=".5" stop-color="#f7e6bd"/><stop offset=".74" stop-color="#c9a45f"/><stop offset="1" stop-color="#87692f"/>
+</linearGradient></defs>
+<rect width="400" height="400" fill="#ffffff"/>
+<ellipse cx="200" cy="338" rx="88" ry="11" fill="#000000" opacity=".05"/>
+<circle cx="200" cy="130" r="30" fill="url(#metal)" stroke="#87692f" stroke-width="1"/>
+<rect x="191" y="150" width="18" height="26" rx="7" fill="url(#metalV)"/>
+<circle cx="200" cy="252" r="88" fill="none" stroke="url(#metalV)" stroke-width="15"/>
+<circle cx="200" cy="252" r="88" fill="none" stroke="#ffffff" stroke-opacity=".22" stroke-width="3"/>
+</svg>

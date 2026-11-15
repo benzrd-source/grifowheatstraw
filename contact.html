@@ -34,7 +34,14 @@
     <div class="contact-grid">
       <div>
         <div class="contact-card"><h3>Email</h3><a data-email href="#">Jackbathroom@aliyun.com</a></div>
-        <div class="contact-card"><h3>Phone &amp; WhatsApp</h3><a data-phone href="#">+86 13586626316</a><br><a data-whatsapp href="#" target="_blank" rel="noopener">Chat on WhatsApp</a></div>
+        <div class="wa-cta" data-wa-only>
+          <div class="wa-cta-tag"><span class="wa-cta-icon"><svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false"><path fill="#fff" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.95 9.95 0 0 0 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.13h-.01a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.21 8.21 0 0 1-1.26-4.36c0-4.55 3.71-8.25 8.26-8.25a8.2 8.2 0 0 1 5.84 2.42 8.2 8.2 0 0 1 2.41 5.84c0 4.55-3.71 8.25-8.26 8.25zm4.52-6.18c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.23.25-.87.85-.87 2.07s.89 2.4 1.01 2.56c.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.16-.48-.28z"/></svg></span> Fastest reply</div>
+          <h3>Chat on WhatsApp</h3>
+          <a class="wa-cta-number" data-wa-number data-whatsapp href="https://wa.me/8613586626316" target="_blank" rel="noopener">+86 13586626316</a>
+          <p>Send a model number or a photo and get a reply within one working day. Catalogues, quotations, specification sheets and finish samples are all handled here.</p>
+          <a class="btn btn-wa btn-block" data-wa-link href="https://wa.me/8613586626316" target="_blank" rel="noopener">Start WhatsApp chat</a>
+        </div>
+        <div class="contact-card"><h3>Phone</h3><a data-phone href="#">+86 13586626316</a></div>
         <div class="contact-card"><h3>Factory</h3><p class="muted" data-address>Guangdong, China</p></div>
         <div class="contact-card"><h3>Working hours</h3><p class="muted">Mon&ndash;Fri 09:00&ndash;18:00 (GMT+8). We reply within one working day.</p></div>
       </div>
@@ -47,8 +54,11 @@
           <div class="field full"><label for="f-interest">Interested in</label><select id="interest" name="interest"></select></div>
           <div class="field full"><label for="f-message">Message</label><textarea id="f-message" name="message" placeholder="Quantity, finish, target price, project timeline..."></textarea></div>
         </div>
-        <button class="btn btn-primary" type="submit" style="margin-top:22px">Send inquiry</button>
-        <p class="form-note">This form opens your email app with everything filled in. No data is stored on a server, and there is no monthly form-service fee.</p>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Send inquiry</button>
+          <button class="btn btn-wa-ghost" type="button" id="wa-form-btn" data-wa-only>Send on WhatsApp instead</button>
+        </div>
+        <p class="form-note">The form opens your email app with everything filled in; the WhatsApp button sends the same details into a chat. No data is stored on a server, and there is no monthly form-service fee.</p>
         <p id="form-sent" class="notice hidden" style="margin-top:16px"></p>
       </form>
     </div>
@@ -82,7 +92,7 @@
         <h4>Get in touch</h4>
         <a data-email href="#">Jackbathroom@aliyun.com</a>
         <a data-phone href="#">+86 13586626316</a>
-        <a data-whatsapp href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <a data-whatsapp data-wa-only href="#" target="_blank" rel="noopener">WhatsApp</a>
         <p data-address style="margin-top:14px">Guangdong, China</p>
       </div>
     </div>
@@ -92,6 +102,11 @@
     </div>
   </div>
 </footer>
+<!-- WhatsApp floating contact: number and pre-filled message come from data/site.js -->
+<a class="wa-fab" data-wa-link data-wa-only href="https://wa.me/8613586626316" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+  <span class="wa-fab-icon"><svg viewBox="0 0 24 24" width="23" height="23" aria-hidden="true" focusable="false"><path fill="#fff" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.95 9.95 0 0 0 4.79 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.13h-.01a8.24 8.24 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.21 8.21 0 0 1-1.26-4.36c0-4.55 3.71-8.25 8.26-8.25a8.2 8.2 0 0 1 5.84 2.42 8.2 8.2 0 0 1 2.41 5.84c0 4.55-3.71 8.25-8.26 8.25zm4.52-6.18c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.12-.15.16-.25.25-.42.08-.16.04-.31-.02-.43-.06-.12-.56-1.35-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.23.25-.87.85-.87 2.07s.89 2.4 1.01 2.56c.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.16-.48-.28z"/></svg></span>
+  <span class="wa-fab-text"><strong>WhatsApp us</strong><small data-wa-number>+86 13586626316</small></span>
+</a>
 <div class="modal" id="product-modal">
   <div class="modal-backdrop" data-close></div>
   <div class="modal-card">
