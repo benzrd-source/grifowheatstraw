@@ -27,6 +27,7 @@
   <aside class="admin-side">
     <h3>Site manager</h3>
     <button class="admin-tab active" type="button" data-tab="products">Products</button>
+    <button class="admin-tab" type="button" data-tab="series">Series</button>
     <button class="admin-tab" type="button" data-tab="catalogs">Catalogs &amp; files</button>
     <button class="admin-tab" type="button" data-tab="site">Company info</button>
     <button class="admin-tab" type="button" data-tab="export">Export update</button>
@@ -37,10 +38,18 @@
 
     <section class="admin-panel active" id="panel-products">
       <h2>Products</h2>
-      <p class="panel-lead">Edit product details and assign an image for each surface finish. Select a file from your computer to preview it; the file is included when you export the update package.</p>
-      <div class="admin-note"><strong>How this works:</strong> this page runs entirely in your browser and does not connect to a server. Your edits stay here until you export and upload the update package. Nothing is published by accident.</div>
+      <p class="panel-lead">Edit product details, assign an image for each surface finish, and add up to <strong>3 detail close-up images</strong> that appear directly under the main product photo. The <strong>Series</strong> field decides which family a product belongs to; <strong>Type</strong> is the faucet kind printed on the card and used by the product-page filter. Select a file from your computer to preview it; the file is included when you export the update package.</p>
+      <div class="admin-note"><strong>How this works:</strong> this page runs entirely in your browser and does not connect to a server. Your edits stay here until you export and upload the update package. Nothing is published by accident. Each product shows at most 3 detail views — extra slots are ignored. Use square close-ups (handle, spout, finish texture); WebP or JPG under 300 KB each keeps the site fast.</div>
       <div id="products-editor"></div>
       <div class="admin-actions"><button class="btn btn-ghost" type="button" id="add-product">+ Add a product</button></div>
+    </section>
+
+    <section class="admin-panel" id="panel-series">
+      <h2>Series</h2>
+      <p class="panel-lead">The website groups products by series. One series can hold basin mixers, kitchen faucets, shower and bathtub mixers, concealed shower valves and shower column sets — each with its own finishes and up to 3 detail photos.</p>
+      <div class="admin-note"><strong>One catalogue page = one series.</strong> Set the catalogue page number here and visitors get a direct link to that page in the PDF. Give every product the same <strong>Series</strong> name and choose its <strong>Type</strong> on the Products tab. The quickest way to add a whole series is to send your assistant one folder of images per series: the import script creates the series, the products and the image paths automatically. The 2026 catalogue has also been imported page by page: each page is its own series with a full-page cover and a collapsible photo gallery of every image on that page.</div>
+      <div id="series-editor"></div>
+      <div class="admin-actions"><button class="btn btn-ghost" type="button" id="add-series">+ Add a series</button></div>
     </section>
 
     <section class="admin-panel" id="panel-catalogs">
@@ -83,7 +92,7 @@
     <section class="admin-panel" id="panel-guide">
       <h2>Deployment guide</h2>
       <p class="panel-lead">Set up for overseas customers: no ICP filing, no server, no monthly hosting fee. Only the domain costs money.</p>
-      <div class="admin-note"><strong>Status (checked 2026-11-15):</strong> grifowheatstraw.com is registered and already uses Cloudflare nameservers (<span class="code">noah.ns.cloudflare.com</span> / <span class="code">ryleigh.ns.cloudflare.com</span>). No A, CNAME, MX or www records exist yet. Product photos are still placeholders. Finish steps 2&ndash;5 below to go live on your own domain.</div>
+      <div class="admin-note"><strong>Status (checked 2026-11-15):</strong> grifowheatstraw.com and www.grifowheatstraw.com are live over HTTPS on Cloudflare Pages, with the 2026 catalogue and real product photos. Inquiries still go to <span class="code">Jackbathroom@aliyun.com</span>; Cloudflare Email Routing / MX is not configured, so finish step 5 only if you want an address on your own domain. Steps 1&ndash;4 are done; the notes below are kept as setup reference.</div>
 
       <div class="guide-step">
         <div class="guide-num">1</div>
@@ -113,7 +122,7 @@
       <div class="guide-step">
         <div class="guide-num">6</div>
         <div><h4>Routine updates</h4>
-          <p>Send new product images and PDF catalogs to your assistant: files go into <span class="code">inbox/</span>, the import script rebuilds <span class="code">data/</span> and <span class="code">assets/</span>, and the site is republished. You can also use this Site manager → Export update → unzip → drag the folders into the repository root on github.com → Commit. Pages rebuilds automatically. No server, no deploy command, no fee.</p></div>
+          <p>Send new product images and PDF catalogs to your assistant: files go into <span class="code">inbox/</span>, the import script rebuilds <span class="code">data/</span> and <span class="code">assets/</span>, and the site is republished. For detail close-ups, name the files <span class="code">型号_detail1.jpg</span>, <span class="code">型号_detail2.jpg</span>, <span class="code">型号_detail3.jpg</span> (or <span class="code">型号_细节1.jpg</span>) — up to 3 per model, shown under the main photo. <strong>For a whole series</strong>, put all of its photos in one folder named after the series: <span class="code">inbox/VIENNA/SS504002_Chrome.jpg</span>, <span class="code">inbox/VIENNA/Kitchen Faucet_Chrome.jpg</span>, and so on. One folder = one series = one catalogue page. Type names can be Chinese (面盆龙头 / 厨房龙头 / 淋浴龙头 / 浴缸龙头 / 暗装淋浴龙头 / 花洒升降套装). Every page of the PDF catalogue is also imported as its own series, so nothing in the catalogue is missing from the site. Add a <span class="code">series.json</span> in the folder for a custom description and page number, or just let the import script sort it out. You can also use this Site manager → Export update → unzip → drag the folders into the repository root on github.com → Commit. Pages rebuilds automatically. No server, no deploy command, no fee.</p></div>
       </div>
 
       <h3 class="admin-h4">Annual cost</h3>
@@ -135,7 +144,7 @@
       <h3 class="admin-h4">Limits to keep in mind</h3>
       <ul class="list-plain">
         <li>Cloudflare Pages: 20,000 files per site, 25 MB per file, 500 builds per month. Far more than a product-showcase site needs.</li>
-        <li>No server-side code, no database, no shopping cart. Inquiries arrive by email or WhatsApp, which is normal for B2B hardware.</li>
+        <li>No server-side code, no database, no shopping cart. Inquiries arrive by email or WhatsApp, which is normal for B2B sanitary ware.</li>
         <li>This manager edits files locally in the browser. It is not a hosted CMS and cannot push changes by itself.</li>
         <li>Do not put prices, cost sheets or customer lists in a public repository. Keep the repository private if the files are sensitive.</li>
       </ul>
@@ -150,6 +159,7 @@
 </div>
 
 <script src="data/site.js"></script>
+<script src="data/series.js"></script>
 <script src="data/products.js"></script>
 <script src="data/catalogs.js"></script>
 <script src="assets/js/site.js"></script>
