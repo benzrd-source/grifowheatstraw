@@ -92,7 +92,7 @@
     <section class="admin-panel" id="panel-guide">
       <h2>Deployment guide</h2>
       <p class="panel-lead">Set up for overseas customers: no ICP filing, no server, no monthly hosting fee. Only the domain costs money.</p>
-      <div class="admin-note"><strong>Status (checked 2026-11-15):</strong> grifowheatstraw.com and www.grifowheatstraw.com are live over HTTPS on Cloudflare Pages, with the 2026 catalogue and real product photos. Inquiries still go to <span class="code">Jackbathroom@aliyun.com</span>; Cloudflare Email Routing / MX is not configured, so finish step 5 only if you want an address on your own domain. Steps 1&ndash;4 are done; the notes below are kept as setup reference.</div>
+      <div class="admin-note"><strong>Status (checked 2026-11-16):</strong> grifowheatstraw.com and www.grifowheatstraw.com are live over HTTPS on Cloudflare Pages, with the 2026 catalogue and real product photos. The business address <span class="code">sales@grifowheatstraw.com</span> is now used by every "Inquire" button and the contact page. Cloudflare Email Routing MX + SPF are configured, the destination address is verified, and forwarding was tested successfully <strong>before</strong> the site email was switched; mail is forwarded to <span class="code">Jackbathroom@aliyun.com</span>. Steps 1&ndash;5 are done; the notes below are kept as setup reference.</div>
 
       <div class="guide-step">
         <div class="guide-num">1</div>
@@ -116,8 +116,8 @@
       </div>
       <div class="guide-step">
         <div class="guide-num">5</div>
-        <div><h4>Set up a free business email address</h4>
-          <p>Cloudflare → Email → Email Routing: create <span class="code">info@grifowheatstraw.com</span> and forward it to <span class="code">Jackbathroom@aliyun.com</span> (the mailbox printed in the 2026 catalogue), free. <strong>Only after forwarding is verified</strong>, change the email in Company info or <span class="code">inbox/company.json</span> &mdash; otherwise inquiries would go nowhere.</p></div>
+        <div><h4>Set up a free business email address &mdash; done</h4>
+          <p><strong>Done.</strong> Cloudflare dashboard &rarr; <strong>Compute &gt; Email Service &gt; Email Routing</strong>: (1) <strong>Destination Addresses</strong> &rarr; <span class="code">Jackbathroom@aliyun.com</span> verified; (2) <strong>Routing Rules</strong> &rarr; <span class="code">sales@</span> and <span class="code">info@</span> &rarr; <em>Send to an email</em> &rarr; verified destination; (3) <strong>Catch-all</strong> enabled so misspelled addresses still arrive. Unlimited inbound mail, CNY 0. A test message was received before the site email was switched. Note: Email Routing only <em>receives</em> and forwards; to <em>send from</em> @grifowheatstraw.com you need a real mailbox (Zoho Mail free plan or similar), which requires switching MX away from Cloudflare &mdash; one domain can only have one MX set, so choose one, not both.</p></div>
       </div>
       <div class="guide-step">
         <div class="guide-num">6</div>

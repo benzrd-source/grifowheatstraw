@@ -4,7 +4,7 @@ window.SITE = {
   "brandShort": "YIDE",
   "tagline": "Best Service, Excellent Quality",
   "since": "20+ years in sanitary ware",
-  "email": "Jackbathroom@aliyun.com",
+  "email": "sales@grifowheatstraw.com",
   "phone": "+86 13586626316",
   "whatsapp": "8613586626316",
   "address": "No.22 Zhongxin Road, Luqiao District, Taizhou, Zhejiang, China 318056",
